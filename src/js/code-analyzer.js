@@ -1,7 +1,6 @@
 import * as esprima from 'esprima';
 
 let originString;
-//let flatVal;
 const supported = ['FunctionDeclaration',
     'VariableDeclaration' ,
     'ExpressionStatement',
@@ -154,7 +153,6 @@ let rbHelper = function (innerBody) {
 };
 let bHelper = function(curr) {
     if(curr.type in handlers) {
-        //flatVal = flatVal + 1;
         return handlers[curr.type](curr);
     }
     else return [];
@@ -186,7 +184,6 @@ function flatten(arr) {
 
 //parse code starter
 const parseCode = (codeToParse) => {
-    //flatVal = 0;
     originString = codeToParse;
     let body =  ((esprima.parseScript(codeToParse, {loc:true, range: true})).body);
     //arrange and return data
