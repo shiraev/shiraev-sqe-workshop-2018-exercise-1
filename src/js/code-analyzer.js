@@ -1,7 +1,23 @@
 import * as esprima from 'esprima';
 
 let originString;
-let flatVal;
+//let flatVal;
+const supported = ['FunctionDeclaration',
+    'VariableDeclaration' ,
+    'ExpressionStatement',
+    'AssignmentExpression',
+    'ForStatement',
+    'WhileStatement',
+    'IfStatement',
+    'ReturnStatement'];
+
+let isSupported = function (x) {
+    for (let i = 0; i < supported.length; i++){
+        if (x === supported[i])
+            return true;
+    }
+    return false;
+};
 
 //creating var
 let varOrganizer = function (loc, type, name, value){//helper
@@ -23,8 +39,10 @@ const funcHandler = function (funC) {
 };
 //var helper
 let varHandlerValueHelper = function (x) {//helper
-    if(x.init in x)
-        return x.init.value;
+    if(x.init !== null){
+        let range = x.init['range'];
+        return originString.substring(range[0],range[1]);
+    }
     return [];
 };
 const varHandler = function (varC) {
@@ -40,7 +58,7 @@ const varHandler = function (varC) {
 };
 /** making sure ass will happen**/
 const expHandler = function (expC) {//helper
-    if ('expression' in expC)
+    if ('expression' in expC && isSupported(expC.expression.type))
         return handlers[expC.expression.type](expC.expression);
     return [];
 };
@@ -90,7 +108,7 @@ const ifHandler = function (ifC) {
     let type = 'IfStatement';
 
     let alternate = [];
-    if(ifC.alternate !== undefined)
+    if(ifC.alternate !== undefined && ifC.alternate !== null)
         alternate = elseHandler(ifC['alternate']);
     let alters = alterHandler(alternate);
 
@@ -136,7 +154,7 @@ let rbHelper = function (innerBody) {
 };
 let bHelper = function(curr) {
     if(curr.type in handlers) {
-        flatVal = flatVal + 1;
+        //flatVal = flatVal + 1;
         return handlers[curr.type](curr);
     }
     else return [];
@@ -155,16 +173,24 @@ let parsedRec = function (x) {
         if(x.type in handlers)
             bodySep = handlers[x.type](x);
     }
+    if(!(bodySep instanceof  Array))
+        bodySep = [bodySep];
     return bodySep.concat(recBodies);
 };
+/** flat implementation **/
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+}
 
 //parse code starter
 const parseCode = (codeToParse) => {
-    flatVal = 0;
+    //flatVal = 0;
     originString = codeToParse;
     let body =  ((esprima.parseScript(codeToParse, {loc:true, range: true})).body);
     //arrange and return data
-    return ((parsedRec(body)).flat(flatVal)).sort(function (a,b) {
+    return flatten(parsedRec(body)).sort(function (a,b) {
         return a.loc - b.loc;
     });
 };

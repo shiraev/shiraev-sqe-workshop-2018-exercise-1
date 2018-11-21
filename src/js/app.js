@@ -51,7 +51,7 @@ function drawTable() {/**menu line**/
         rowMenu.appendChild(cellM);
     }
     tbl.appendChild(rowMenu);
-    for (let r = 0; r < totalRows; r++) {/**rest lines**/
+    for (let r = 0; r < totalRows; r++) {//rest lines
         let row = document.createElement('tr'), currObject = parsedCodeModel[sessionNumber][r], line = handlers[currObject.type](currObject);
         for (let c = 0; c < cellsInRow; c++) {
             let cell = document.createElement('td'), cellText = document.createTextNode(line[c]);
@@ -70,15 +70,8 @@ $(document).ready(function () {
         let codeToParse = $('#codePlaceholder').val();
         parsedCodeModel[sessionNumber] = parseCode(codeToParse);
         totalRows = parsedCodeModel[sessionNumber].length;
-        //$('#parsedCode').val(JSON.stringify(parsedCode, null, 2));
         $('#parsedCode').val(drawTable());
-        //drawTable();
         sessionNumber = sessionNumber + 1;
     });
 });
 
-
-/*TODO
-1. multi click on button is not cleaning - DONE
-2. put table inside something with scroll
- */
