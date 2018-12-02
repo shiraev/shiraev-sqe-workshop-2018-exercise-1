@@ -63,7 +63,8 @@ const expHandler = function (expC) {//helper
 };
 const assignmentHandler = function (assC) {
     let type = 'AssignmentExpression';
-    let name = assC.left['name'];
+    let nameRange = assC.left['range'];
+    let name = originString.substring(nameRange[0], nameRange[1]);
 
     let range = assC.right['range'];
     let value = originString.substring(range[0],range[1]);
