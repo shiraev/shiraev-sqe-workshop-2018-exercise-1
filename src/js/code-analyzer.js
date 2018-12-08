@@ -63,8 +63,7 @@ const expHandler = function (expC) {//helper
 };
 const assignmentHandler = function (assC) {
     let type = 'AssignmentExpression';
-    let nameRange = assC.left['range'];
-    let name = originString.substring(nameRange[0], nameRange[1]);
+    let name = assC.left['name'];
 
     let range = assC.right['range'];
     let value = originString.substring(range[0],range[1]);
@@ -110,16 +109,13 @@ const ifHandler = function (ifC) {
     let alternate = [];
     if(ifC.alternate !== undefined && ifC.alternate !== null)
         alternate = elseHandler(ifC['alternate']);
-    let body = [];
-    if('consequent' in ifC)
-        body = parsedRec(ifC.consequent);
     let alters = alterHandler(alternate);
 
     let range = ifC.test['range'];
     let value = originString.substring(range[0],range[1]);
 
     let loc = (ifC.loc.start['line']);
-    return [{loc, type, value}].concat(body).concat(alters);
+    return [{loc, type, value}].concat(alters);
 };
 
 const elseHandler = function(elseC) {
